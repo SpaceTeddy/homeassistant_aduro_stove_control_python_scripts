@@ -1,0 +1,8 @@
+# add following lines to your configuration.yaml to enable provided config files
+
+python_script:
+  #HACS python_script pro
+  !include python_script.yaml
+
+mqtt:
+  !include mqtt_devices.yaml
