@@ -6,7 +6,7 @@ It requires PythonScriptsPro (https://github.com/AlexxIT/PythonScriptsPro) for H
 After all files are saved into HA directories and HA restarted, you has access to HA `Python Scripts Pro: exec` service call.
 As an example you can use following data parameter to read out the stove status data:
 
-
+`
 file: python_scripts/pyduro_mqtt.py
 STOVE_SERIAL: <your stove serial>
 STOVE_PIN: <your stove pw>
@@ -17,3 +17,4 @@ MQTT_PASSWORD: <client PW>
 MQTT_BASE_PATH: "aduro_h2/"
 MODE: status
 cache: false
+`
