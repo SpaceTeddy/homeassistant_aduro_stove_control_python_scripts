@@ -1,0 +1,97 @@
+sensors:
+  #------------------------------------------------------------------------------
+  - name: "Aduro H2 Smoke Temperature"
+    unique_id: sensor.aduro_smoketemperature
+    state_topic: "aduro_h2/status"
+    #state_class: measurement
+    value_template: "{{(value_json['STATUS']['smoke_temp']) | float | round(1)}}"
+    unit_of_measurement: "°C"
+    device_class: temperature
+
+  - name: "Aduro H2 Shaft Temperature"
+    unique_id: sensor.aduro_shafttemperature
+    state_topic: "aduro_h2/status"
+    #state_class: measurement
+    value_template: "{{(value_json['STATUS']['shaft_temp']) | float | round(1)}}"
+    unit_of_measurement: "°C"
+    device_class: temperature
+
+  - name: "Aduro H2 Power kW"
+    unique_id: sensor.aduro_power_kw
+    state_topic: "aduro_h2/status"
+    state_class: measurement
+    value_template: "{{(value_json['STATUS']['power_kw']|float) | round(1)}}"
+    unit_of_measurement: "kW"
+    #device_class: energy
+
+  - name: "Aduro H2 Power W"
+    unique_id: sensor.aduro_power_w
+    state_topic: "aduro_h2/status"
+    state_class: measurement
+    value_template: "{{(value_json['STATUS']['power_kw']|float * 1000) | round(1)}}"
+    unit_of_measurement: "W"
+    #device_class: energy
+
+  - name: "Aduro H2 State"
+    unique_id: sensor.aduro_state
+    state_topic: "aduro_h2/status"
+    value_template: "{{(value_json['STATUS']['state']|float) | round(1)}}"
+
+  - name: "Aduro H2 Substate"
+    unique_id: sensor.aduro_substate
+    state_topic: "aduro_h2/status"
+    value_template: "{{(value_json['STATUS']['substate']|float) | round(1)}}"
+
+  - name: "Aduro H2 Oxygen"
+    unique_id: sensor.aduro_oxygen
+    state_topic: "aduro_h2/status"
+    value_template: "{{(value_json['STATUS']['oxygen']|float) | round(1)}}"
+    unit_of_measurement: "ppm"
+
+  - name: "Aduro H2 Consumption Day"
+    unique_id: sensor.aduro_consumption_day
+    state_topic: "aduro_h2/consumption_data"
+    state_class: measurement
+    unit_of_measurement: "kg"
+    value_template: "{{(value_json.CONSUMPTION.Day|float) | float | round(3)}}"
+    #device_class: energy
+
+  - name: "Aduro H2 Consumption Yesterday"
+    unique_id: sensor.aduro_consumption_yesterday
+    state_topic: "aduro_h2/consumption_data"
+    state_class: measurement
+    unit_of_measurement: "kg"
+    value_template: "{{(value_json.CONSUMPTION.Yesterday|float) | round(3)}}"
+    #device_class: energy
+
+  - name: "Aduro H2 Consumption Month"
+    unique_id: sensor.aduro_consumption_month
+    state_topic: "aduro_h2/consumption_data"
+    state_class: measurement
+    unit_of_measurement: "kg"
+    value_template: "{{(value_json.CONSUMPTION.Month|float) |float | round(3)}}"
+    #device_class: energy
+
+  - name: "Aduro H2 Consumption Year"
+    unique_id: sensor.aduro_consumption_year
+    state_topic: "aduro_h2/consumption_data"
+    state_class: measurement
+    unit_of_measurement: "kg"
+    value_template: "{{(value_json.CONSUMPTION.Year|float) |float | round(3)}}"
+    #device_class: energy
+
+  - name: "Aduro H2 Stove Serial"
+    unique_id: sensor.aduro_stove_serial
+    state_topic: "aduro_h2/discovery"
+    value_template: "{{(value_json.DISCOVERY.StoveSerial)}}"
+
+  - name: "Aduro H2 Stove IP"
+    unique_id: sensor.aduro_stove_ip
+    state_topic: "aduro_h2/discovery"
+    value_template: "{{(value_json.DISCOVERY.StoveIP)}}"
+
+  - name: "Aduro H2 Stove Heatlevel"
+    unique_id: sensor.aduro_stove_heatlevel
+    state_topic: "aduro_h2/status"
+    value_template: "{{(value_json['STATUS']['regulation.fixed_power']|float)|float | round(3)}}"
+    #------------------------------------------------------------------------------
