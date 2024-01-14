@@ -7,9 +7,9 @@ After all files are saved into HA directories and HA restarted, you has access t
 As an example you can use following data parameter to read out the stove status data:
 
 `
-file: python_scripts/pyduro_mqtt.py
-STOVE_SERIAL: <your stove serial>
-STOVE_PIN: <your stove pw>
+file: python_scripts/pyduro_mqtt.py <br />
+STOVE_SERIAL: <your stove serial> <br />
+STOVE_PIN: <your stove pw> <br />
 MQTT_SERVER_IP: <your mqtt broker IP>
 MQTT_SERVER_PORT: 1883
 MQTT_USERNAME: <client username>
