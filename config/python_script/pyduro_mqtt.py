@@ -6,6 +6,7 @@
 #---import
 from pyduro.actions import FUNCTIONS, STATUS_PARAMS, discover, get, set, raw
 import paho.mqtt.client as mqtt
+import asyncio
 
 import json
 import time
@@ -13,9 +14,10 @@ from datetime import date, timedelta
 
 # ------------------------------------------------------------------------------
 # Get data from Home Assistant
+
 MQTT_SERVER_IP   = data.get('MQTT_SERVER_IP')
 MQTT_SERVER_PORT = data.get('MQTT_SERVER_PORT')
-MQTT_BASE_PATH   = data.get('MQTT_BASE_PATH') #+ "/"
+MQTT_BASE_PATH   = data.get('MQTT_BASE_PATH')
 MQTT_USERNAME    = data.get('MQTT_USERNAME')
 MQTT_PASSWORD    = data.get('MQTT_PASSWORD')
 STOVE_SERIAL     = data.get('STOVE_SERIAL')
@@ -36,9 +38,9 @@ def on_connect(client, userdata, flags, rc):
     #client.subscribe(MQTT_BASE_PATH)
 
 # The callback when the client disconnects from server
-def on_disconnect(client, userdata,rc=0):
+async def on_disconnect(client, userdata,rc=0):
     #logging.debug("DisConnected result code "+str(rc))
-    client.loop_stop()
+    await client.loop_stop()
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
@@ -233,10 +235,10 @@ def get_status(ip, serial, pin):
 def get_network_data(ip, serial, pin):
     from pyduro.actions import FUNCTIONS, STATUS_PARAMS, discover, get, set, raw
     import json
-    
+
     result = 0
     mqtt_json_data = " "
-    
+
     try:
         response = raw.run(
             burner_address=str(ip),
@@ -251,7 +253,7 @@ def get_network_data(ip, serial, pin):
     except:
         result = -1
         return result, mqtt_json_data
-    
+
     count = 0
     for i in data:
         #print(str(count) + ":" + str(data[count]))
@@ -276,10 +278,10 @@ def get_network_data(ip, serial, pin):
 def get_operating_data(ip, serial, pin):
     from pyduro.actions import FUNCTIONS, STATUS_PARAMS, discover, get, set, raw
     import json
-    
+
     result = 0
     mqtt_json_data = " "
-    
+
     response = raw.run(
         burner_address=str(ip),
         serial=str(serial),
@@ -401,10 +403,12 @@ def set_start_stop(ip, STOVE_SERIAL, STOVE_PIN, start_stop):
 #--------------------------------------------------------------------------------
 
 #--------------------------------[MAIN]-----------------------------------------
+#logger.info(f"starting Pyduro script!")
+
 #init Mqtt stuff if script shall send mqtt data
 if MQTT_SERVER_IP != None:
     client = mqtt.Client()
-    client.on_connect = on_connect
+    client.on_connect == on_connect
     client.on_message = on_message
     client.username_pw_set(username=MQTT_USERNAME,password=MQTT_PASSWORD)
     client.connect(MQTT_SERVER_IP, MQTT_SERVER_PORT, 60)
@@ -418,25 +422,26 @@ ip = hass.states.get('sensor.aduro_h2_stove_ip').state
 
 # check if IP is valid. fallback to Stove Cloud address if not valid
 aduro_cloud_backup_address = "apprelay20.stokercloud.dk"
-#workaround if stove lost router ipv4 -> switch to cloud server address 
+
+# workaround if stove lost router ipv4 -> switch to cloud server address 
 if "0.0.0.0" in ip or ip == "unknown" or ip == "no connection" or ip == aduro_cloud_backup_address:
     try:
         result, ip, serial, mqtt_json_discover_data = get_discovery_data()
-        #logger.info(f"IP from Discovery:{ ip}")
-        if "0.0.0.0" in ip: # or ip == "unknown":
+        if "0.0.0.0" in ip:
             ip = aduro_cloud_backup_address
 
         discovery_json = json.loads(mqtt_json_discover_data)
         discovery_json['DISCOVERY']['StoveIP'] = ip
         discovery_json['DISCOVERY']['StoveSerial'] = serial
         mqtt_json_discover_data = json.dumps(discovery_json)
-        #logger.info(f"Discovery Data:{mqtt_json_discover_data}")
-        client.publish(MQTT_BASE_PATH + "discovery", str(mqtt_json_discover_data))
-        time.sleep(0.2)
+
+        if MQTT_SERVER_IP != None:
+            client.publish(MQTT_BASE_PATH + "discovery", str(mqtt_json_discover_data))
+            time.sleep(0.2)
     except:
-        logger.info(f"Discovery Exeption!")
-        client.disconnect()
-        #client.loop_stop()
+        #logger.info(f"Discovery Exeption!")
+        if MQTT_SERVER_IP != None:
+            client.disconnect()
         exit()
 #-------------------------------------------------------------------------------
 
@@ -447,21 +452,17 @@ if MODE == "discover" or MODE == "all":
         result, ip, serial, mqtt_json_discover_data = get_discovery_data()
         client.publish(MQTT_BASE_PATH + "discovery", str(mqtt_json_discover_data))
         time.sleep(0.2)
-        #print(mqtt_json_discover_data)
     except:
         #retries 3 times
         for x in range(0, 3):
             #print("Discovery retry: %2d" %x)
             time.sleep(1)
             result, ip, serial, mqtt_json_discover_data = get_discovery_data()
-            time.sleep(0.2)
             if result != -1:
                 client.publish(MQTT_BASE_PATH + "discovery", str(mqtt_json_discover_data))
                 time.sleep(0.2)
-                #print(mqtt_json_discover_data)
                 break
         client.disconnect()
-        #client.loop_stop()
         exit()
 #-------------------------------------------------------------------------------
 
@@ -472,18 +473,15 @@ if MODE == "network" or MODE == "all":
         result, mqtt_json_network_data = get_network_data(ip, STOVE_SERIAL, STOVE_PIN)
         client.publish(MQTT_BASE_PATH + "network", str(mqtt_json_network_data))
         time.sleep(0.2)
-        print(mqtt_json_network_data)
     except:
         #retries 3 times
         for x in range(0, 3):
-            #print("Network retry: %2d" %x)
             time.sleep(1)
             result, ip, serial, mqtt_json_discover_data = get_discovery_data()
             result, mqtt_json_network_data = get_network_data(ip, STOVE_SERIAL, STOVE_PIN)
             if result != -1:
                 client.publish(MQTT_BASE_PATH + "network", str(mqtt_json_network_data))
                 time.sleep(0.2)
-                print(mqtt_json_network_data)
                 break
 #-------------------------------------------------------------------------------
 
@@ -494,18 +492,15 @@ if MODE == "consumption" or MODE == "all":
         result, mqtt_json_consumption_data = get_consumption_data(ip,STOVE_SERIAL,STOVE_PIN)                
         client.publish(MQTT_BASE_PATH + "consumption_data", str(mqtt_json_consumption_data))
         time.sleep(0.2)
-        print(mqtt_json_consumption_data)
     except:
         #retries 3 times
         for x in range(0, 3):
-            #print("Consumption retry: %2d" %x)
             time.sleep(1)
             result, ip, serial, mqtt_json_discover_data = get_discovery_data()
             result, mqtt_json_consumption_data = get_consumption_data(ip,STOVE_SERIAL,STOVE_PIN)                
             if result != -1:
                 client.publish(MQTT_BASE_PATH + "consumption_data", str(mqtt_json_consumption_data))
                 time.sleep(0.2)
-                print(mqtt_json_consumption_data)
                 break
 #-------------------------------------------------------------------------------
 
@@ -514,21 +509,17 @@ if MODE == "consumption" or MODE == "all":
 if MODE == "status" or MODE == "all":
     try:
         result, mqtt_json_status_data = get_status(ip, STOVE_SERIAL, STOVE_PIN)
-        #logger.info(f"Status Data:{mqtt_json_status_data}")
         client.publish(MQTT_BASE_PATH + "status", str(mqtt_json_status_data))
         time.sleep(0.2)
-        print(mqtt_json_status_data)
     except:
         #retries 3 times
         for x in range(0, 3):
-            #print("Status retry: %2d" %x)
             time.sleep(1)
             result, ip, serial, mqtt_json_discover_data = get_discovery_data()
             result, mqtt_json_status_data = get_status(ip, STOVE_SERIAL, STOVE_PIN)
             if result != -1:
                 client.publish(MQTT_BASE_PATH + "status", str(mqtt_json_status_data))
                 time.sleep(0.2)
-                print(mqtt_json_status_data)
                 break
 #-------------------------------------------------------------------------------
 if MODE == "set_heatlevel":
@@ -537,7 +528,6 @@ if MODE == "set_heatlevel":
     except:
         #retries 3 times
         for x in range(0, 3):
-            #print("Heatlevel retry: %2d" %x)
             time.sleep(1)
             result, ip, serial, mqtt_json_discover_data = get_discovery_data()
             result = set_heatlevel(ip, serial, STOVE_PIN, STOVE_HEATLEVEL)
@@ -550,7 +540,6 @@ if MODE == "set_force_auger":
     except:
         #retries 3 times
         for x in range(0, 3):
-            #print("Force Anger retry: %2d" %x)
             time.sleep(1)
             result, ip, serial, mqtt_json_discover_data = get_discovery_data()
             result = set_force_auger(ip, STOVE_SERIAL, STOVE_PIN)
@@ -563,7 +552,6 @@ if MODE == "set_start_stop":
     except:
         #retries 3 times
         for x in range(0, 3):
-            #print("Heatlevel retry: %2d" %x)
             time.sleep(1)
             result, ip, serial, mqtt_json_discover_data = get_discovery_data()
             result = set_start_stop(ip, serial, STOVE_PIN, STOVE_START_STOP)
