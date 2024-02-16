@@ -4,5 +4,6 @@ python_script:
   #HACS python_script pro
   !include python_script.yaml
 
+# if you use an external mqtt yaml file, you have to add / change this here
 mqtt:
   !include mqtt_devices.yaml
