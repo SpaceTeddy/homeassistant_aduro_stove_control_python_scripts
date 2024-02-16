@@ -63,7 +63,6 @@ pyduro_mqtt_all:
         MQTT_BASE_PATH: "aduro_h2/"
         MODE: all
         cache: false
-      #response_variable: result
 
 pyduro_mqtt_discover:
   sequence:
