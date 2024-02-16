@@ -3,6 +3,8 @@ This script can be used to control your Aduro Hybrid stove via Homeassistant
 
 It requires PythonScriptsPro (https://github.com/AlexxIT/PythonScriptsPro) for HA and pyduro (https://github.com/clementprevot/pyduro) as standard python library to get connection to the stove. In addition, paho-mqtt (https://github.com/eclipse/paho.mqtt.python) library is required for python mqtt connectifity.
 
+and... well, yes. after you have installed everything, you should use your own helper and automations to start the scripts. ;)
+
 -> check out the requirements in configuration.yaml & python_script.yaml
 
 After all files are saved into HA directories and HA restarted, you has access to HA `Python Scripts Pro: exec` service call.
