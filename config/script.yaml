@@ -1,0 +1,139 @@
+pyduro_mqtt_all:
+  sequence:
+    - service: python_script.exec
+      data:
+        file: python_scripts/pyduro_mqtt.py
+        STOVE_SERIAL: 12345
+        STOVE_PIN: 123456789
+        MQTT_SERVER_IP: 192.168.0.2
+        MQTT_SERVER_PORT: 1883
+        MQTT_USERNAME: max
+        MQTT_PASSWORD: powers
+        MQTT_BASE_PATH: "aduro_h2/"
+        MODE: all
+        cache: false
+
+pyduro_mqtt_discover:
+  sequence:
+    - service: python_script.exec
+      data:
+        file: python_scripts/pyduro_mqtt.py
+        STOVE_SERIAL: 12345
+        STOVE_PIN: 123456789
+        MQTT_SERVER_IP: 192.168.0.2
+        MQTT_SERVER_PORT: 1883
+        MQTT_USERNAME: max
+        MQTT_PASSWORD: powers
+        MQTT_BASE_PATH: "aduro_h2/"
+        MODE: discover
+        cache: false
+
+pyduro_mqtt_network:
+  sequence:
+    - service: python_script.exec
+      data:
+        file: python_scripts/pyduro_mqtt.py
+        STOVE_SERIAL: 12345
+        STOVE_PIN: 123456789
+        MQTT_SERVER_IP: 192.168.0.2
+        MQTT_SERVER_PORT: 1883
+        MQTT_USERNAME: max
+        MQTT_PASSWORD: powers
+        MQTT_BASE_PATH: "aduro_h2/"
+        MODE: network
+        cache: false
+
+pyduro_mqtt_consumption:
+  sequence:
+    - service: python_script.exec
+      data:
+        file: python_scripts/pyduro_mqtt.py
+        STOVE_SERIAL: 12345
+        STOVE_PIN: 123456789
+        MQTT_SERVER_IP: 192.168.0.2
+        MQTT_SERVER_PORT: 1883
+        MQTT_USERNAME: max
+        MQTT_PASSWORD: powers
+        MQTT_BASE_PATH: "aduro_h2/"
+        MODE: consumption
+        cache: false
+
+pyduro_mqtt_status:
+  sequence:
+    - service: python_script.exec
+      data:
+        file: python_scripts/pyduro_mqtt.py
+        STOVE_SERIAL: 12345
+        STOVE_PIN: 123456789
+        MQTT_SERVER_IP: 192.168.0.2
+        MQTT_SERVER_PORT: 1883
+        MQTT_USERNAME: max
+        MQTT_PASSWORD: powers
+        MQTT_BASE_PATH: "aduro_h2/"
+        MODE: status
+        cache: false
+
+pyduro_start:
+  sequence:
+    - service: python_script.exec
+      data:
+        file: python_scripts/pyduro_mqtt.py
+        STOVE_SERIAL: 12345
+        STOVE_PIN: 123456789
+        MODE: set_start_stop
+        STOVE_START_STOP: start
+        cache: false
+
+pyduro_stop:
+  sequence:
+    - service: python_script.exec
+      data:
+        file: python_scripts/pyduro_mqtt.py
+        STOVE_SERIAL: 12345
+        STOVE_PIN: 123456789
+        MODE: set_start_stop
+        STOVE_START_STOP: stop
+        cache: false
+
+pyduro_force_auger:
+  sequence:
+    - service: python_script.exec
+      data:
+        file: python_scripts/pyduro_mqtt.py
+        STOVE_SERIAL: 12345
+        STOVE_PIN: 123456789
+        MODE: set_force_auger
+        cache: false
+
+pyduro_heatlevel_1:
+  sequence:
+    - service: python_script.exec
+      data:
+        file: python_scripts/pyduro_mqtt.py
+        STOVE_SERIAL: 12345
+        STOVE_PIN: 123456789
+        MODE: set_heatlevel
+        STOVE_HEATLEVEL: 1
+        cache: false
+
+pyduro_heatlevel_2:
+  sequence:
+    - service: python_script.exec
+      data:
+        file: python_scripts/pyduro_mqtt.py
+        STOVE_SERIAL: 12345
+        STOVE_PIN: 123456789
+        MODE: set_heatlevel
+        STOVE_HEATLEVEL: 2
+        cache: false
+
+pyduro_heatlevel_3:
+  sequence:
+    - service: python_script.exec
+      data:
+        file: python_scripts/pyduro_mqtt.py
+        STOVE_SERIAL: 12345
+        STOVE_PIN: 123456789
+        MODE: set_heatlevel
+        STOVE_HEATLEVEL: 3
+        cache: false
