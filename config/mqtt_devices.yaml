@@ -1,5 +1,5 @@
 sensors:
-  #------------------------------------------------------------------------------
+  #--------------------------------------------------------------------------------------------
   - name: "Aduro H2 Smoke Temperature"
     unique_id: sensor.aduro_smoketemperature
     state_topic: "aduro_h2/status"
@@ -35,12 +35,12 @@ sensors:
   - name: "Aduro H2 State"
     unique_id: sensor.aduro_state
     state_topic: "aduro_h2/status"
-    value_template: "{{(value_json['STATUS']['state']|float) | round(1)}}"
+    value_template: "{{(value_json['STATUS']['state']|float) | round(0)}}"
 
   - name: "Aduro H2 Substate"
     unique_id: sensor.aduro_substate
     state_topic: "aduro_h2/status"
-    value_template: "{{(value_json['STATUS']['substate']|float) | round(1)}}"
+    value_template: "{{(value_json['STATUS']['substate']|float) | round(0)}}"
 
   - name: "Aduro H2 Oxygen"
     unique_id: sensor.aduro_oxygen
@@ -93,5 +93,13 @@ sensors:
   - name: "Aduro H2 Stove Heatlevel"
     unique_id: sensor.aduro_stove_heatlevel
     state_topic: "aduro_h2/status"
-    value_template: "{{(value_json['STATUS']['regulation.fixed_power']|float)|float | round(3)}}"
-    #------------------------------------------------------------------------------
+    #value_template: "{{(value_json['STATUS']['regulation.fixed_power']|float)|float | round(0)}}"
+    value_template: >-
+      {%   if (value_json['STATUS']['regulation.fixed_power']|float)|float | round(0)   == 10 %}
+      1
+      {% elif (value_json['STATUS']['regulation.fixed_power']|float)|float | round(0) == 50 %}
+      2
+      {% elif (value_json['STATUS']['regulation.fixed_power']|float)|float | round(0) == 100 %}
+      3
+      {% endif %}
+  #-----------------------------------------------------------------------------------------------
