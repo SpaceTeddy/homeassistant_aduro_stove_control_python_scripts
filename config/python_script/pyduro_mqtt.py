@@ -183,7 +183,7 @@ def get_consumption_data(ip, serial, pin):
         count = count + 1
 
     year = date.today().year #get current month from calender
-    data_position_offset = year - 2013 #calculate data array position from current year. 2013 is data[0]...
+    data_position_offset = year - (year-(len(data)-1)) #calculate data array position from current year. 2013 is data[0]...
 
     if response:
         consumption_json = {"CONSUMPTION": {"Day": consumption_today, "Yesterday": consumption_yesterday, "Month": consumption_month, "Year": data[data_position_offset]}} 
